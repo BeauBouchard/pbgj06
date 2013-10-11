@@ -1,5 +1,3 @@
-
-
 /*
  * Title: battleengine.js
  * Description: used for pokemon/FF style battles with different simular functions
@@ -37,9 +35,16 @@
 	function enemyCreture() {}
 	enemyCreture.prototype = new Creature(20);
 	
-	function attack(attacker, target)
-	{
-		
+	function attack(attacker, target){
+		console.log(target.getHP);
+		target.takeDamage(attacker.getAP());
+		//dodge chance? 
+		//if( target.getDodge() >= Math.floor((Math.random()*100)+1)){successful dodge}else{attack success}
+		console.log("Attack successful");
+		console.log(target.getHP);
 	}
+	
+	
+	
 
 }
