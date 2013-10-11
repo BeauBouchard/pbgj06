@@ -5,19 +5,94 @@
  */
  
 
- var creatures = {};
- var playerC = {};
- var enemyP = {};
+	var creatureTypes = [];
+	var playerC = {};
+	var enemyP = {};
 	var opponentLock = false; // true means oppenent is making a move, false means player can proceed
 	var matchProceed = true;
 	var victoryCondition;
- 
+	
+	
+ 	function Type (inctypenum,incName,incDesc, incmodHP,incmodAP,incmodDodge,incweakness, incstrength) {
+		this.typenum 	= inctypenum;
+		this.Name		= incName;
+		this.Desc		= incDesc;
+		this.modHP 		= incmodHP;
+		this.modAP 		= incmodAP;
+		this.modDodge 	= incmodDodge;
+		this.weakness	= incweakness;
+		this.strength 	= incstrength;
+	}
+	Type.prototype = {
+		getTypenum: 	function() { return this.typenum},
+		getName: 		function() { return this.Name},
+		getDesc: 		function() { return this.Desc},
+		getModHP: 		function() { return this.modHP},
+		getModAP: 		function() { return this.modAP},
+		getModDodge: 	function() { return this.modDodge},
+		getWeakness: 	function() { return this.weakness },
+		getStrength: 	function() { return this.strength }
+	}
+	
+	function initCreatureTypes(){
+		//01 - Rock			
+		var rock = new Type(1
+		,"Rock"
+		,"Rock Creature has a little more health, Is grounded from Electric Types, Is weak against Water Type"
+		,0.25
+		,0.05
+		,0.0
+		,2
+		,4);
+		
+		
+		//02 - Water			
+		var water = new Type(2
+		,"Water"
+		,"Water creature Strong against Fire, Is weak against Electric Types"
+		,0.05
+		,0
+		,0.05
+		,4
+		,3);
+		
+		
+		//03 - fire			
+		var fire = new Type(3
+		,"Fire"
+		,"Fire creature has a strong attack Is weak against water Types"
+		,0
+		,0.2
+		,0.05
+		,4
+		,3);
+		
+		
+		//04 - Electric			
+		var electric = new Type(4
+		,"Electric"
+		,"Electric creature Strong against Water, Is weak against Rock"
+		,0.05
+		,0
+		,0.15
+		,1
+		,2);
+		creatureTypes.push(rock);
+		creatureTypes.push(water);
+		creatureTypes.push(fire);
+		creatureTypes.push(electric);
+	}
+	
+	
 	// Eventually I want the base attack and base health to be calculated during the create's creation, based on the creature type
 	// Creature type = 1; Creature.Type.hpmod(baseHP)   Creature.Type.hpmod(100) returns 125, as 1.25 is the mod
-	function Creature (handicap) {
+	function Creature (nerf, inctype) {
+		this.type  = creatureTypes[inctype] instanceof Type;
 		this.baseHP = 100;		//base Health Points
 		this.baseAP = 25; 		//base Attack Damage
-		this.currentHP = this.baseHP-handicap;   //
+		this.baseDodge = 5;		//base percentage of dodge
+		this.currentHP = this.baseHP*(this.type.getModHP()+1);
+		
 		this.getInfo = function getInfo() {
         return 'Stats \n baseHP:' + this.baseHP + '\n baseAttack: ' + this.baseAP + '.';
 		}
@@ -28,15 +103,29 @@
 		getHP: function() {return this.currentHP;},
 		getAP: function() {return this.baseAP;}
 	};
+	
+	
 	//Creature.prototype.constructor = {}
+	
+
+	
+	/* 
+	Rock			=	(bonus damage to Electric)
+	Water			=	(bonus damage to Rock and Fire)
+	Fire			=	(bonus damage to Rock)
+	Electric		=	(bonus damage to Water)
+	
+	
+	
+	*/
 	
 	//player has 3 slots for creatures,
 	// right now 1 creature is stored
 	function playerCreature() {}
-	playerCreature.prototype = new Creature(0);
+	playerCreature.prototype = new Creature(0,1);
 	
 	function enemyCreture() {}
-	enemyCreture.prototype = new Creature(20);
+	enemyCreture.prototype = new Creature(20,2);
 	
 	function attack(attacker, target){
 		
@@ -49,7 +138,9 @@
 	}
 	
 	
-	
+	/*
+	* checkVictoryCondition()
+	*/
 	function checkVictoryCondition(player, enemy){
 		if(enemy.getHP()<=0){
 			//victory!
@@ -67,10 +158,20 @@
 		
 	}
 	
-	
+	/*
+	* checkGame()
+	* checks to see if the game is over, and alert victory condition
+	*/
 	function checkGame(){
 		if(victoryCondition){console.log("You Won!");}else{ console.log("You lose!");}
 	}
+	
+	
+	
+	/*
+	* playerGoes()
+	* Allows player to attack gamer permitting
+	*/
 	function playerGoes(){
 	
 		if(opponentLock)
@@ -94,6 +195,10 @@
 
 	}
 	
+	/*
+	* opponentTurn()
+	* Processes opponent's move
+	*/
 	function opponentTurn(){
 		if(matchProceed)
 		{
@@ -107,11 +212,14 @@
 		
 	}
 	
+	
+	
 	function init(){
 		//initializing buttons
 		var atbutton = document.getElementById("attack");
 		atbutton.addEventListener("click", function(){playerGoes(); });
-		initCharacters();
+		initCreatureTypes();
+		initBattle();
 		initGUI();
 		
 		
@@ -124,7 +232,8 @@
 		yourhealth.innerHTML = playerC.getHP();
 	}
 	
-	function initCharacters(){
+	
+	function initBattle(){
 		playerC = new playerCreature();
 		enemyP = new enemyCreture();
 	}
