@@ -6,8 +6,11 @@
  
 
  var creatures = {};
- 
-
+ var playerC = {};
+ var enemyP = {};
+	var opponentLock = false; // true means oppenent is making a move, false means player can proceed
+	var matchProceed = true;
+	var victoryCondition;
  
 	// Eventually I want the base attack and base health to be calculated during the create's creation, based on the creature type
 	// Creature type = 1; Creature.Type.hpmod(baseHP)   Creature.Type.hpmod(100) returns 125, as 1.25 is the mod
@@ -36,15 +39,105 @@
 	enemyCreture.prototype = new Creature(20);
 	
 	function attack(attacker, target){
-		console.log(target.getHP);
+		
 		target.takeDamage(attacker.getAP());
+		checkVictoryCondition(playerC, enemyP);
 		//dodge chance? 
 		//if( target.getDodge() >= Math.floor((Math.random()*100)+1)){successful dodge}else{attack success}
 		console.log("Attack successful");
-		console.log(target.getHP);
+		updateInterface();
 	}
 	
 	
 	
+	function checkVictoryCondition(player, enemy){
+		if(enemy.getHP()<=0){
+			//victory!
+			console.log("Enemy destroyed!");
+			matchProceed = false;
+			victoryCondition = true;
+			
+		}
+		if(player.getHP()<=0){
+			//defeat
+			console.log("You were destroyed!");
+			matchProceed = false;
+			victoryCondition = false;
+		}
+		
+	}
+	
+	
+	function checkGame(){
+		if(victoryCondition){console.log("You Won!");}else{ console.log("You lose!");}
+	}
+	function playerGoes(){
+	
+		if(opponentLock)
+		{
+			console.log("opponent is currently going");
+		}
+		else
+		{
+			if(matchProceed)
+			{
+				attack(playerC, enemyP);
+				console.log("opponent's turn!");
+				window.setTimeout(opponentTurn,2000);
+				opponentLock = true;
+			}
+			else {
+				checkGame();
+				console.log("Game is over.");
+			}
+		}
 
-}
+	}
+	
+	function opponentTurn(){
+		if(matchProceed)
+		{
+			attack(enemyP, playerC);
+		}
+		else {
+			checkGame();
+			console.log("Game is over.");
+		}
+		opponentLock = false;
+		
+	}
+	
+	function init(){
+		//initializing buttons
+		var atbutton = document.getElementById("attack");
+		atbutton.addEventListener("click", function(){playerGoes(); });
+		initCharacters();
+		initGUI();
+		
+		
+	}
+	
+	function initGUI(){
+		var enemyhealth = document.getElementById("enemyhealth");
+		var yourhealth = document.getElementById("yourhealth");
+		enemyhealth.innerHTML =  enemyP.getHP();
+		yourhealth.innerHTML = playerC.getHP();
+	}
+	
+	function initCharacters(){
+		playerC = new playerCreature();
+		enemyP = new enemyCreture();
+	}
+	
+	function updateInterface(){
+		var enemyhealth = document.getElementById("enemyhealth");
+		var yourhealth = document.getElementById("yourhealth");
+		enemyhealth.innerHTML =  enemyP.getHP();
+		yourhealth.innerHTML = playerC.getHP();
+	}
+	
+	
+	
+	window.onload = init();
+
+
