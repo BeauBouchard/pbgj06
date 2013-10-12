@@ -12,7 +12,9 @@
 	var matchProceed = true;
 	var victoryCondition;
 	
-	
+	/* ***************************************
+	 *  Creature Types (Rock, Fire, Water, Eletric, Leaf)
+	 * ***************************************/
  	function Type (inctypenum,incName,incDesc, incmodHP,incmodAP,incmodDodge,incweakness, incstrength) {
 		this.typenum 	= inctypenum;
 		this.Name		= incName;
@@ -34,6 +36,15 @@
 		getStrength: 	function() { return this.strength }
 	}
 	
+	/* 
+	Rock			=	(bonus damage to Electric)
+	Water			=	(bonus damage to Rock and Fire)
+	Fire			=	(bonus damage to Rock)
+	Electric		=	(bonus damage to Water)
+	
+	
+	
+	*/
 	function initCreatureTypes(){
 		//01 - Rock			
 		var rock = new Type(1
@@ -83,6 +94,30 @@
 		creatureTypes.push(electric);
 	}
 	
+	/* ***************************************
+	 *  Special Attacks
+	 * ***************************************/
+	
+	function  Special (incdmg) {
+		
+		this.dmg		= incdmg;
+		
+	
+		
+		
+	}
+	Special.prototype = {
+		init: 		function(){
+			
+		},
+		animate: 	function(){
+			
+		}
+	}
+	
+	/* ***************************************
+	 *              CREATURE
+	 * ***************************************/
 	
 	// Eventually I want the base attack and base health to be calculated during the create's creation, based on the creature type
 	// Creature type = 1; Creature.Type.hpmod(baseHP)   Creature.Type.hpmod(100) returns 125, as 1.25 is the mod
@@ -107,17 +142,29 @@
 	
 	//Creature.prototype.constructor = {}
 	
-
+	/* ***************************************
+	 *              PLAYER
+	 * ***************************************/
 	
-	/* 
-	Rock			=	(bonus damage to Electric)
-	Water			=	(bonus damage to Rock and Fire)
-	Fire			=	(bonus damage to Rock)
-	Electric		=	(bonus damage to Water)
-	
-	
-	
-	*/
+	function Player( ){
+		this.creatureStack = [];
+		
+		
+	}
+	Player.prototype = {
+		switchCreature: function(fromcreature,tocreature) {
+			
+		},
+		generateThreeCreatures: function(){
+			
+			var creatureOne		= generateRandCreature();
+			var creatureTwo		= generateRandCreature();
+			var creatureThree 	= generateRandCreature();
+			this.creatureStack.push(creatureOne);
+			this.creatureStack.push(creatureTwo);
+			this.creatureStack.push(creatureThree);
+		}
+	}
 	
 	//player has 3 slots for creatures,
 	// right now 1 creature is stored
@@ -126,6 +173,13 @@
 	
 	function enemyCreture() {}
 	enemyCreture.prototype = new Creature(20,2);
+	
+	function generateRandCreature(){
+		
+		var randcreatureobj = new Creature(0,Math.floor((Math.random()*3))));
+		
+		return randcreatureobj;
+	}
 	
 	function attack(attacker, target){
 		
