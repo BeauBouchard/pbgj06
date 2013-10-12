@@ -7,7 +7,7 @@
 
 
 //+------------------------------------------------+
-//| 		GAME 								   |
+//| 		GAME 				   |
 //+------------------------------------------------+
 
 var Game = {
@@ -41,5 +41,14 @@ var Monster = Class.create({
 	
 	},
   });
+  
+var Player = Class.create({
+	initialize: function() {
+	
+	},
+	spawn: function(ix, iy) {
+		
+	}
+});
 	
 	
