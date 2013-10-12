@@ -29,7 +29,7 @@ var Game = {
 	}
 }
 //+------------------------------------------------+
-//| 		MAP  								   |
+//| 		MAP  				   |
 //+------------------------------------------------+
 var Map = Class.create({
 	initialize: function() {
@@ -59,25 +59,9 @@ var Player = Class.create({
 });
 
 
-
-
-
-//Game loop
-var main = function () {
-	var now = Date.now();
-	var delta = now - then;
-	
-	update(delta / 1000);
-	render();
-	
-	then = now;
-};
-
-start();
-var then = Date.now();
-setInterval(main,1);
-
-
+//+------------------------------------------------+
+//| 		INPUT 				   |
+//+------------------------------------------------+
 // Event listener for keystroke codes
 var keyStroke = {};
 
@@ -122,6 +106,22 @@ function handleInput(inc_mod) {
 	// PLAYER VARIABLES
 }
 
+//+------------------------------------------------+
+//| 		Game loop			   |
+//+------------------------------------------------+
+//Game loop
+var main = function () {
+	var now = Date.now();
+	var delta = now - then;
+	
+	update(delta / 1000);
+	render();
+	
+	then = now;
+};
+start();
+var then = Date.now();
+setInterval(main,1);
 var update = function (inc_mod) { handleInput(inc_mod); }
 	
 	
