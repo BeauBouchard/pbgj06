@@ -41,12 +41,18 @@ var Map = Class.create({
 	},
 }); // Map
 
+//+------------------------------------------------+
+//| 		Monster 			   |
+//+------------------------------------------------+
 var Monster = Class.create({
 	initialize: function() {
 	
 	},
   });
   
+//+------------------------------------------------+
+//| 		Player	 			   |
+//+------------------------------------------------+
 var Player = Class.create({
 	initialize: function(canvas) {
 		this.x = canvas.width / 2;
@@ -55,7 +61,28 @@ var Player = Class.create({
 	},
 	spawn: function(ix, iy) {
 		
+	},
+	render: function() {
+		
+	},
+	tryMove: function(dX, dY) {
+		
 	}
+});
+
+//+------------------------------------------------+
+//| 		Entity	 			   |
+//+------------------------------------------------+
+// other non-moving items. Including barriers/grass
+var Entity = Class.create({
+//	render
+	initialize: function() {
+	
+	},
+	render: function() {
+		
+	}
+	
 });
 
 
