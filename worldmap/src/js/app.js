@@ -25,6 +25,7 @@ var Game = {
 	
 	},
 	setupLevel: function(source) {
+		
 	}
 }
 //+------------------------------------------------+
@@ -32,7 +33,11 @@ var Game = {
 //+------------------------------------------------+
 var Map = Class.create({
 	initialize: function() {
-	
+	 	var canvas = document.createElement("canvas");
+	 	var context= canvas.getContext("2d");
+	 	canvas.width = 1024;
+	 	canvas.height = 768;
+	 	document.getElementById("game").appendChild(canvas);
 	},
 }); // Map
 
@@ -43,12 +48,33 @@ var Monster = Class.create({
   });
   
 var Player = Class.create({
-	initialize: function() {
-	
+	initialize: function(canvas) {
+		this.x = canvas.width / 2;
+		this.y = canvas.height / 2;
+		spawn(this.x,this.y);
 	},
 	spawn: function(ix, iy) {
 		
 	}
 });
+
+
+
+
+
+//Game loop
+var main = function () {
+	var now = Date.now();
+	var delta = now - then;
+	
+	update(delta / 1000);
+	render();
+	
+	then = now;
+};
+
+start();
+var then = Date.now();
+setInterval(main,1);
 	
 	
