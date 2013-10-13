@@ -3,8 +3,7 @@
  * Author: Beau Bouchard (@beaubouchard)
  */
  
-var keyStroke = {};
-var tick = 0;
+
 var game;
 
 function messagelog(text){
@@ -16,7 +15,9 @@ function messagelog(text){
 
 function Game(){
 	this.map;
+	this.tick=0;
 	this.player;
+	this.keyStroke = {};
 }
 Game.prototype = {
 	initialize: function() {
@@ -24,10 +25,10 @@ Game.prototype = {
 		this.map = new Map();
 		this.map.initialize();
 		addEventListener("keydown", function (e) {
-				keyStroke[e.keyCode] = true;
+				game.keyStroke[e.keyCode] = true;
 			}, false);
 		addEventListener("keyup", function (e) {
-				delete keyStroke[e.keyCode];
+				delete game.keyStroke[e.keyCode];
 			}, false);
 	},
 	onready: function() { 
@@ -66,31 +67,31 @@ Game.prototype = {
 	//+------------------------------------------------+
 	// Event listener for keystroke codes
 	handleInput:		function(inc_mod){
-			if ((38 in keyStroke )|| (87 in keyStroke)) {// up key stroke or 'w' key stroke
+			if ((38 in this.keyStroke )|| (87 in this.keyStroke)) {// up key stroke or 'w' key stroke
 				if(cdetect){player.y -= player.speed * inc_mod;}
 				else{player.y += player.speed * inc_mod*4;}
-				tick += inc_mod*5;
+				game.tick += inc_mod*5;
 			}
-			if ((40 in keyStroke) || (83 in keyStroke)) { // down key stroke or 's' key stroke
+			if ((40 in this.keyStroke) || (83 in this.keyStroke)) { // down key stroke or 's' key stroke
 				if(cdetect){player.y += player.speed * inc_mod;}
 				else{player.y -= player.speed * inc_mod*4;}
-				tick += inc_mod*5;
+				game.tick += inc_mod*5;
 			}
-			if ((37 in keyStroke) || (65 in keyStroke)){ // left key stroke or 'a' key stroke
+			if ((37 in this.keyStroke) || (65 in this.keyStroke)){ // left key stroke or 'a' key stroke
 				if(cdetect){player.x -= player.speed * inc_mod;}
 				else{player.x += player.speed * inc_mod*4;}
-				tick += inc_mod*5;
+				game.tick += inc_mod*5;
 			}
-			if ((39 in keyStroke) || (68 in keyStroke)) { // right key stroke or 'd' key stroke
+			if ((39 in this.keyStroke) || (68 in this.keyStroke)) { // right key stroke or 'd' key stroke
 				if(cdetect){player.x += player.speed * inc_mod;}
 				else{player.x -= player.speed * inc_mod*4;}
-				tick += inc_mod*5;
+				game.tick += inc_mod*5;
 			}
 			
-			if(tick >1){playerAnimate();tick=0;}
+			if(game.tick >1){playerAnimate();game.tick=0;}
 			
 			//action, or fire? button 
-			if ((32 in keyStroke) || (17 in keyStroke)) { // SPACE key stroke or CTRL key stroke
+			if ((32 in this.keyStroke) || (17 in this.keyStroke)) { // SPACE key stroke or CTRL key stroke
 				//Fire
 			}
 			// PLAYER VARIABLES
@@ -143,12 +144,17 @@ Monster.prototype = {
 function Player(){
 	this.x;
 	this.y;
+	this.sprite;
 }
 Player.prototype = {
 	initialize: function(canvas) {
 		this.x = canvas.width / 2;
 		this.y = canvas.height / 2;
 		spawn(this.x,this.y);
+	},
+	loadSprite: function() {
+		this.sprite = new Sprite("player");
+		this.sprite.initialize(this.x,this.y);;
 	},
 	spawn: function(ix, iy) {
 		
@@ -166,6 +172,7 @@ Player.prototype = {
 //+------------------------------------------------+
 // other non-moving items. Including barriers/grass
 function Entity(){
+	var x,y,size,passable = false;
 }
 Entity.prototype = {
 	initialize: function() {
@@ -174,6 +181,28 @@ Entity.prototype = {
 	render: function() {
 		
 	}
+}
+
+function Sprite(inctype){
+	this.spritetype = inctype;
+	this.spritetable =[
+	["player", "media/images/player.png"],
+	["monster", "media/images/badguy.png"],
+	["tallgrass", "media/images/tallgrass.png"]
+	];
+}
+Sprite.prototype = {
+	initialize: 		function(iX, iY) {
+		
+	},
+	preloadImages:		function() {
+	
+	},
+	loadImage: 			function(){
+	},
+	parseImage:			function(){
+	}
+
 }
 
 
