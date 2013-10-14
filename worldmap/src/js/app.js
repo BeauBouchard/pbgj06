@@ -102,19 +102,23 @@ Game.prototype = {
 //+------------------------------------------------+
 function Map(){
 	this.canvas;
+	this.context;
 }
 Map.prototype = {
 	initialize: function() {
 		messagelog("map.prototype init");
-		this.canvas = document.createElement("canvas");
-	 	var context= this.canvas.getContext("2d");
-	 	this.canvas.width = 1024;
-	 	this.canvas.height = 768;
+		this.canvas 		= document.createElement("canvas");
+	 	this.context 		= this.canvas.getContext("2d");
+	 	this.canvas.width 	= 1024;
+	 	this.canvas.heigh	= 768;
 	 	document.getElementById("game").appendChild(this.canvas);
 		
 	},
 	getCanvas: function() { 
 		return this.canvas;
+	},
+	getContext: function() {
+		return this.context;
 	}
 } // Map
 
@@ -183,6 +187,9 @@ Entity.prototype = {
 	}
 }
 
+//+------------------------------------------------+
+//| 		Sprite	 			   |
+//+------------------------------------------------+
 function Sprite(inctype){
 	this.spritetype = inctype;
 	this.spritetable =[
@@ -193,7 +200,7 @@ function Sprite(inctype){
 }
 Sprite.prototype = {
 	initialize: 		function(iX, iY) {
-		
+		var context = game.map.getContext();
 	},
 	preloadImages:		function() {
 	
