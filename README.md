@@ -12,7 +12,6 @@ A demo engine to create a turn based battle between user and opponent team.
  * Leveling system
  * Different classes, rock paper scissor 5 class structure. 
  * Different Specials for each class, abilities unlock at levels
- * 
 
 ### worldmap
 A simple top down sprite walking on canvas map to get from point A to B.
