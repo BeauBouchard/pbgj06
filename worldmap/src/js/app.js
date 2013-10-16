@@ -158,10 +158,11 @@ Player.prototype = {
 	},
 	loadSprite: function() {
 		this.sprite = new Sprite("player");
-		this.sprite.initialize(this.x,this.y);;
+		this.sprite.initialize(this.x,this.y);
+		
 	},
 	spawn: function(ix, iy) {
-		
+		this.sprite.spawn(ix, iy);
 	},
 	render: function() {
 		
