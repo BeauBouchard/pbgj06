@@ -1,6 +1,7 @@
 /*
  * Game Engine for Sprite Based HTML5 Canvas Game
  * Author: Beau Bouchard (@beaubouchard)
+ * https://github.com/BeauBouchard/pbgj06/
  */
  
 
