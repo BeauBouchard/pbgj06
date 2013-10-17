@@ -231,6 +231,10 @@ function Menu(){
 Menu.prototype = {
 	initialize: 		function(incMenuNum) {
 		this.menuList = this.menuOptions[incMenuNum];
+	},
+	loadMenu : 		function() {
+		//for each this.menuList
+		//display(this.menuList[x]);
 	}
 	
 }
