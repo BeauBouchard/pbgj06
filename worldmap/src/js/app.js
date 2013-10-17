@@ -18,30 +18,19 @@ function messagelog(text){
 
 function Game(){
 	this.gamewindow = document.getElementById("game");
-	this.map;
+	this.map = new Map();
 	this.tick=0;
-	this.player;
+	this.player = new Player();
 	this.keyStroke = [];
+	this.then;
 }
 Game.prototype = {
 	initialize: function() {
-		messagelog("game.prototype init");
-		this.map = new Map();
+		messagelog("game.prototype initialize");
+		
 		this.map.initialize();
-		this.player = new Player();
+		this.player.initialize(this.map.getContext());
 		
-		
-		
-		this.map.canvas.addEventListener("onkeydown", function (e) {
-				
-				messagelog("keydownlistener");
-				game.keyStroke[e.keyCode] = true;
-			}, false);
-		this.map.canvas.addEventListener("onkeyup", function (e) {
-				delete game.keyStroke[e.keyCode];
-			}, false);
-			
-		messagelog("game.prototype init : onstart");
 		this.onstart();
 		
 	},
@@ -50,7 +39,7 @@ Game.prototype = {
 	},
 	onstart: 			function() {
 		
-		this.player.initialize(this.map.getContext());
+		messagelog("game.prototype.onstart");
 	},
 	renderToCanvas: 	function(){
 	},
@@ -65,42 +54,49 @@ Game.prototype = {
 	//+------------------------------------------------+
 	//Game loop
 	main: 				function(){
+		
 		var now = Date.now();
-		var delta = now - then;
+		var delta = now - this.then;
 	
 		game.update(delta / 1000);
 		game.render();
-	
-		then = now;
+		
+		
+		this.then = now;
 	},
 	update: 			function(incMod){
+	
 		game.handleInput(incMod);
+		
+		
 	},
 	render:				function(){
+	
 	},
 	//+------------------------------------------------+
 	//| 		INPUT 				   |
 	//+------------------------------------------------+
 	// Event listener for keystroke codes
 	handleInput:		function(incMod){
+			
 			if ((38 in this.keyStroke )|| (87 in this.keyStroke)) {// up key stroke or 'w' key stroke
-				game.player.tryMove(game.player.x ,(game.player.y += game.player.speed * incMod));
+				game.player.tryMove(game.player.getX() ,(game.player.getY() + (game.player.getSpeed() * incMod)));
 				game.tick += incMod*5;
 			}
 			if ((40 in this.keyStroke) || (83 in this.keyStroke)) { // down key stroke or 's' key stroke
-				game.player.tryMove(game.player.x ,(game.player.y -= game.player.speed * incMod));
+				game.player.tryMove(game.player.getX() ,(game.player.getY() - (game.player.getSpeed() * incMod)));
 				game.tick += incMod*5;
 			}
 			if ((37 in this.keyStroke) || (65 in this.keyStroke)){ // left key stroke or 'a' key stroke
-				game.player.tryMove((game.player.x += player.speed * incMod*4),game.player.y);
+				game.player.tryMove((game.player.getX() + (game.player.getSpeed() * incMod)),game.player.getY());
 				game.tick += incMod*5;
 			}
 			if ((39 in this.keyStroke) || (68 in this.keyStroke)) { // right key stroke or 'd' key stroke
-				game.player.tryMove((game.player.x -= player.speed * incMod*4),game.player.y);
+				game.player.tryMove((game.player.getX() - (game.player.getSpeed() * incMod)),game.player.getY());
 				game.tick += incMod*5;
 			}
 			
-			if(game.tick >1){playerAnimate();game.tick=0;}
+			//if(game.tick >1){playerAnimate();game.tick=0;}
 			
 			//action, or fire? button 
 			if ((32 in this.keyStroke) || (17 in this.keyStroke)) { // SPACE key stroke or CTRL key stroke
@@ -118,14 +114,14 @@ function Map(){
 }
 Map.prototype = {
 	initialize: function() {
-		messagelog("map.prototype init");
+		messagelog("map.prototype initialize");
 		this.canvas 		= document.createElement("canvas");
 	 	this.context 		= this.canvas.getContext("2d");
 	 	this.canvas.width 	= 1024;
-	 	this.canvas.heigh	= 768;
+	 	this.canvas.height	= 768;
+		this.canvas.style.background="#f3f3f3";
+		
 	 	document.getElementById("game").appendChild(this.canvas);
-		
-		
 	},
 	getCanvas: function() { 
 		return this.canvas;
@@ -163,31 +159,42 @@ function Player(){
 	this.x;
 	this.y;
 	this.sprite;
+	this.speed = 256; //pixels per second
 }
 Player.prototype = {
-	initialize: function(canvas) {
+	initialize: function(context) {
 		messagelog("game.player.initialize");
 		this.sprite = new Sprite("box");
-		this.x = canvas.width / 2;
-		this.y = canvas.height / 2;
+		this.x = game.map.getCanvas().width / 2;
+		this.y = game.map.getCanvas().height / 2;
 		this.sprite.initialize(this.x,this.y);
 	},
-	loadSprite: function() {
+	loadSprite: 	function() {
 
 		
 	},
-	spawn: function(ix, iy) {
+	spawn: 			function(ix, iy) {
 		this.sprite.spawn(ix, iy);
 	},
-	render: function() {
+	render: 		function() {
 		
 	},
-	tryMove: function(iX, iY) {
-		messagelog("game.player.trymove("+iX+","+iY+")");
+	tryMove: 		function(iX, iY) {
+		
 		//there will be some colition detection here later. "
+		messagelog(iX);
 		this.x = iX;
 		this.y = iY;
-		thos.sprite.draw(iX, iY);
+		this.sprite.draw(this.x, this.y);
+	},
+	getX: 			function(){
+		return this.x;
+	},
+	getY: 			function(){
+		return this.y;
+	},
+	getSpeed: 		function(){
+		return this.speed;
 	}
 }
 
@@ -255,7 +262,7 @@ Sprite.prototype = {
 	draw:			function(iX, iY){
 		switch (this.spritetype) {
 			case "box":
-				this.context.clearRect(0,0,canvas.width,canvas.height);
+				this.context.clearRect(0,0,game.map.getCanvas().width,game.map.getCanvas().height);
 				this.context.fillStyle = "rgb(200,0,0)";
 				this.context.fillRect (iX, iY, 55, 50);
 				break;
@@ -351,8 +358,13 @@ Menu.prototype = {
 game = new Game();
 game.initialize();
 
-var then = Date.now();
-setInterval(game.main(),1);
+		addEventListener("keydown", function (e) {
+				game.keyStroke[e.keyCode] = true;
+			}, false);
+		addEventListener("keyup", function (e) {
+				delete game.keyStroke[e.keyCode];
+			}, false);
+setInterval(function(){game.main()},1);
 
 	
 	
