@@ -9,32 +9,48 @@ var game;
 function messagelog(text){
 	console.log("## " + text);
 }
+
+
+
 //+------------------------------------------------+
 //| 		GAME 				   |
 //+------------------------------------------------+
 
 function Game(){
+	this.gamewindow = document.getElementById("game");
 	this.map;
 	this.tick=0;
 	this.player;
-	this.keyStroke = {};
+	this.keyStroke = [];
 }
 Game.prototype = {
 	initialize: function() {
 		messagelog("game.prototype init");
 		this.map = new Map();
 		this.map.initialize();
-		addEventListener("keydown", function (e) {
+		this.player = new Player();
+		
+		
+		
+		this.map.canvas.addEventListener("onkeydown", function (e) {
+				
+				messagelog("keydownlistener");
 				game.keyStroke[e.keyCode] = true;
 			}, false);
-		addEventListener("keyup", function (e) {
+		this.map.canvas.addEventListener("onkeyup", function (e) {
 				delete game.keyStroke[e.keyCode];
 			}, false);
+			
+		messagelog("game.prototype init : onstart");
+		this.onstart();
+		
 	},
 	onready: function() { 
 	
 	},
 	onstart: 			function() {
+		
+		this.player.initialize(this.map.getContext());
 	},
 	renderToCanvas: 	function(){
 	},
@@ -57,8 +73,8 @@ Game.prototype = {
 	
 		then = now;
 	},
-	update: 			function(inc_mod){
-		game.handleInput(inc_mod);
+	update: 			function(incMod){
+		game.handleInput(incMod);
 	},
 	render:				function(){
 	},
@@ -66,26 +82,22 @@ Game.prototype = {
 	//| 		INPUT 				   |
 	//+------------------------------------------------+
 	// Event listener for keystroke codes
-	handleInput:		function(inc_mod){
+	handleInput:		function(incMod){
 			if ((38 in this.keyStroke )|| (87 in this.keyStroke)) {// up key stroke or 'w' key stroke
-				if(cdetect){player.y -= player.speed * inc_mod;}
-				else{player.y += player.speed * inc_mod*4;}
-				game.tick += inc_mod*5;
+				game.player.tryMove(game.player.x ,(game.player.y += game.player.speed * incMod));
+				game.tick += incMod*5;
 			}
 			if ((40 in this.keyStroke) || (83 in this.keyStroke)) { // down key stroke or 's' key stroke
-				if(cdetect){player.y += player.speed * inc_mod;}
-				else{player.y -= player.speed * inc_mod*4;}
-				game.tick += inc_mod*5;
+				game.player.tryMove(game.player.x ,(game.player.y -= game.player.speed * incMod));
+				game.tick += incMod*5;
 			}
 			if ((37 in this.keyStroke) || (65 in this.keyStroke)){ // left key stroke or 'a' key stroke
-				if(cdetect){player.x -= player.speed * inc_mod;}
-				else{player.x += player.speed * inc_mod*4;}
-				game.tick += inc_mod*5;
+				game.player.tryMove((game.player.x += player.speed * incMod*4),game.player.y);
+				game.tick += incMod*5;
 			}
 			if ((39 in this.keyStroke) || (68 in this.keyStroke)) { // right key stroke or 'd' key stroke
-				if(cdetect){player.x += player.speed * inc_mod;}
-				else{player.x -= player.speed * inc_mod*4;}
-				game.tick += inc_mod*5;
+				game.player.tryMove((game.player.x -= player.speed * incMod*4),game.player.y);
+				game.tick += incMod*5;
 			}
 			
 			if(game.tick >1){playerAnimate();game.tick=0;}
@@ -113,6 +125,7 @@ Map.prototype = {
 	 	this.canvas.heigh	= 768;
 	 	document.getElementById("game").appendChild(this.canvas);
 		
+		
 	},
 	getCanvas: function() { 
 		return this.canvas;
@@ -120,6 +133,7 @@ Map.prototype = {
 	getContext: function() {
 		return this.context;
 	}
+
 } // Map
 
 //+------------------------------------------------+
@@ -152,13 +166,14 @@ function Player(){
 }
 Player.prototype = {
 	initialize: function(canvas) {
+		messagelog("game.player.initialize");
+		this.sprite = new Sprite("box");
 		this.x = canvas.width / 2;
 		this.y = canvas.height / 2;
-		spawn(this.x,this.y);
+		this.sprite.initialize(this.x,this.y);
 	},
 	loadSprite: function() {
-		this.sprite = new Sprite("player");
-		this.sprite.initialize(this.x,this.y);
+
 		
 	},
 	spawn: function(ix, iy) {
@@ -167,8 +182,12 @@ Player.prototype = {
 	render: function() {
 		
 	},
-	tryMove: function(dX, dY) {
-		
+	tryMove: function(iX, iY) {
+		messagelog("game.player.trymove("+iX+","+iY+")");
+		//there will be some colition detection here later. "
+		this.x = iX;
+		this.y = iY;
+		thos.sprite.draw(iX, iY);
 	}
 }
 
@@ -194,14 +213,37 @@ Entity.prototype = {
 function Sprite(inctype){
 	this.spritetype = inctype;
 	this.spritetable =[
+	["box", "None"],
 	["player", "media/images/player.png"],
 	["monster", "media/images/badguy.png"],
 	["tallgrass", "media/images/tallgrass.png"]
 	];
+	
 }
 Sprite.prototype = {
 	initialize: 		function(iX, iY) {
-		var context = game.map.getContext();
+		messagelog("game.player.sprite.initialize : Type :" + this.spritetype);
+		this.context = game.map.getContext();
+		this.spawn(iX, iY);
+	},
+	spawn:				function(iX, iY) {
+		switch (this.spritetype) {
+			case "box":
+				this.context.fillStyle = "rgb(200,0,0)";
+				this.context.fillRect (10, 10, 55, 50);
+				break;
+			case "player":
+				
+				break;
+			case "monster":
+			
+				break;
+			case "tallgrass":
+				break;
+			default:
+				this.context.fillStyle = "rgb(200,0,0)";
+				this.context.fillRect (10, 10, 55, 50);
+		}
 	},
 	preloadImages:		function() {
 	
@@ -209,6 +251,26 @@ Sprite.prototype = {
 	loadImage: 			function(){
 	},
 	parseImage:			function(){
+	},
+	draw:			function(iX, iY){
+		switch (this.spritetype) {
+			case "box":
+				this.context.clearRect(0,0,canvas.width,canvas.height);
+				this.context.fillStyle = "rgb(200,0,0)";
+				this.context.fillRect (iX, iY, 55, 50);
+				break;
+			case "player":
+				
+				break;
+			case "monster":
+			
+				break;
+			case "tallgrass":
+				break;
+			default:
+				this.context.fillStyle = "rgb(200,0,0)";
+				this.context.fillRect (iX, iY, 55, 50);
+		}
 	}
 
 }
