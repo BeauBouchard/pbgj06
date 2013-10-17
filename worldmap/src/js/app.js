@@ -219,25 +219,69 @@ Sprite.prototype = {
 //| 		Menu	 			   |
 //+------------------------------------------------+
 
-function Menu(){
-	//not sure how to organize menus...
-	//array of menu options?
-	this.menuList = [];
-	this.menuOptions = [
-		["Main Menu","New Game", "Load Game","About","Help", "Exit"],
+//		Each Array contains strings, First string is title, each one following is option
+//		"menu Title", Option 1, Option 2, ...
+var menuArray = [
+		["Main Menu","New Game", "Load Game","2:Help", "Exit"],
 		["World Map Menu","Something"],
 		["In Battle Menu","Something"]];
+var subMenuArray = [
+		
+		["submenu title 1","submenu option 1","submenu option 2","submenu option 3"],
+		["submenu title 2","submenu option 1","submenu option 2","submenu option 3"],
+		["Help Sub Menu","About Game", "Controls"]];
+		
+		
+function Menu(){
+	this.menuList = [];
+	
+        this.subMenuOpen = false;
+
 }
 Menu.prototype = {
+	
 	initialize: 		function(incMenuNum) {
-		this.menuList = this.menuOptions[incMenuNum];
+		//assign which menu to bring up.
+		this.menuList = menuArray[incMenuNum];
+		//loop through menu
+		for (var i = 0; i < this.menuList.length; i++) {
+			var menuItem = this.menuList[i];
+			//add each menu item to screen
+			this.loadMenu[menuItem];
+		}
 	},
-	loadMenu : 		function() {
+	loadMenu : 		function(incMenuItem) {
+		//incMenuItem is a string
+		if(incMenuItem.indexOf(":")>0){
+			//sub menu detected
+			//Loading up submenu
+			var menu = incMenuItem.substring(0,incMenuItem.indexOf(":"));
+			//When a menu item has a submenu
+			//add a onMouseOver event to bring up submenu
+		
+			addEventListener("mouseover", function (e) {
+				menu.loadMenu(menu);
+				this.subMenuOpen = true;
+			}, false);
+			addEventListener("mouseexit", function (e) {
+				menu.unLoadMenu(menu);
+				this.subMenuOpen = false;
+			}, false);
+		}
+		else {
+			//code to append the menu item to canvas
+		}
 		//for each this.menuList
 		//display(this.menuList[x]);
+	},
+	unloadMenu:		function() {
+		//code to unload menu
+		// remember to delete self when done, as object is no longer needed.removeChild()
 	}
 	
 }
+
+
 
 
 
