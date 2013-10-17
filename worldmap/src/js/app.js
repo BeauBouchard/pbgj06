@@ -215,8 +215,24 @@ Sprite.prototype = {
 
 
 
+//+------------------------------------------------+
+//| 		Menu	 			   |
+//+------------------------------------------------+
 
- 
+function Menu(incMenuNum){
+	//not sure how to organize menus...
+	//array of menu options?
+	this.menuOptions = [
+		["Main Menu","New Game", "Load Game","About","Help", "Exit"],
+		["World Map Menu","Something"],
+		["In Battle Menu","Something"]];
+}
+Menu.prototype = {
+	initialize: 		function() {
+		
+	}
+	
+}
 
 
 
