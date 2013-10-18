@@ -17,4 +17,3 @@ A demo engine to create a turn based battle between user and opponent team.
 A simple top down sprite walking on canvas map to get from point A to B.
  * Durring world travel random "encounters" will engage battles. 
  * Menu for "Exit" and "Help"
- * Menus need to be objects, ?
