@@ -45,6 +45,16 @@
 	
 	
 	*/
+	
+		TYPE = {
+				// Health Increase, Attack Increase, Dodge, weakness
+			ROCK:		{ hp: 0.05,  ap: 0.20, dodge: 0.0, weakness: TYPE.WATER },
+			FIRE:		{ hp: 0.00,  ap: 0.20, dodge: 0.05, weakness: TYPE.ROCK },
+			NATURE: 	{ hp: 0.15,  ap: 0.05, dodge: 0.05, weakness: TYPE.FIRE },
+			ELECTRIC:	{ hp: 0.05,  ap: 0.00, dodge: 0.20, weakness: TYPE.NATURE},
+			WATER:		{ hp: 0.1,  ap: 0.1, dodge: 0.05, weakness: TYPE.ELECTRIC }
+		};
+		
 	function initCreatureTypes(){
 		//01 - Rock			
 		var rock = new Type(1
@@ -56,7 +66,7 @@
 		,2
 		,4);
 		
-		
+		(inctypenum,incName,incDesc, incmodHP,incmodAP,incmodDodge,incweakness, incstrength)
 		//02 - Water			
 		var water = new Type(2
 		,"Water"
@@ -77,6 +87,7 @@
 		,0.05
 		,4
 		,3);
+		
 		
 		
 		//04 - Electric			
