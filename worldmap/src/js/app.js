@@ -179,9 +179,22 @@ Map.prototype = {
 			}
 		}
 	},//parseMap
-	setupMap: function (source) {
+	setupMap: function (incMapTemplateImage) {
 		//not yet
-	}
+		function is(pixel, type) 		{ return ((pixel & PIXEL.MASK.TYPE) === type); };
+		function type(pixel)     		{ return  (pixel & PIXEL.MASK.SUBTYPE) >> 4;   };
+		function iswall(pixel)         	{ return is(pixel, PIXEL.WALL);      };
+		function isstart(pixel)        	{ return is(pixel, PIXEL.START);     };
+		function isexit(pixel)         	{ return is(pixel, PIXEL.EXIT);      };
+		Game.parseImage(source, function(tx, ty, pixel) {
+			if (isstart(pixel))
+				setStart(tx, ty);
+			else if (iswall(pixel))
+				addWall(tx, ty);
+			else if (isexit(pixel))
+				addExit(tx, ty);
+		});
+	}//setupMap
 
 } // Map
 
