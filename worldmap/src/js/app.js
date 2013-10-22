@@ -133,6 +133,54 @@ Map.prototype = {
 	},
 	getContext: function() {
 		return this.context;
+	},
+	//loosely based on Jake Gordon's Gaunlet level map generator. 
+	//A little more powerful than I need it to be
+	loadMapImage: function(incSource, onload) {
+		var image = document.createElement('img');
+		image.on('load', onload);
+		image.src = incSource;
+		return image;
+	},
+	parseMap: function(incMapTemplateImage, callback) {
+		/*
+			extract the image width & height
+			render the image to a temporary <canvas>
+			extract the raw pixel imageData
+			provide 3 helper methods to do some low level pixel bit manipulation
+			iterate through all the pixels, calling the callback once for each pixel
+		*/
+		var image = incMapTemplateImage, 
+			totalHeight			= incMapTemplateImage.height, 
+			totalWidth 			= incMapTemplateImage.width,
+			tempCanvas,tempContext,data,tx,ty;
+		tempCanvas = document.createElement('canvas');
+			tempCanvas.width = totalWidth;
+			tempCanvas.height = totalHeight;
+			tempContext = tempCanvas.getContext('2d');
+			tempContext.drawImage(image, 0, 0);
+		data    = ctx.getImageData(0, 0, totalWidth, totalHeight).data;
+		var helpers = {
+			valid: function(tx,ty) { return (tx >= 0) && (tx < totalWidth) && (ty >= 0) && (ty < totalHeight); },
+			//which entry in the imageData represents this tile
+			index: function(tx,ty) { return (tx + (ty*totalWidth)) * 4; },
+			//Pixel returns the pixel color for that tile
+			pixel: function(tx,ty) { 
+				var i = this.index(tx,ty); 
+				return this.valid(tx,ty) ? (data[i]<<16)+(data[i+1]<<8)+(data[i+2]) : null;
+			}//pixel
+		}//helpers
+
+		//run loop for each tx,ty pixel
+		for(ty = 0 ; ty < totalHeight ; ty++) {
+			for(tx = 0 ; tx < totalWidth ; tx++) {
+				//check that pixel
+				callback(tx, ty, helpers.pixel(tx,ty), helpers);
+			}
+		}
+	},//parseMap
+	setupMap: function (source) {
+		//not yet
 	}
 
 } // Map
@@ -364,13 +412,13 @@ Menu.prototype = {
 
 game = new Game();
 game.initialize();
-
 		addEventListener("keydown", function (e) {
 				game.keyStroke[e.keyCode] = true;
 			}, false);
 		addEventListener("keyup", function (e) {
 				delete game.keyStroke[e.keyCode];
 			}, false);
+
 			
 //setInterval(function(){game.main()},1);
 window.webkitRequestAnimationFrame(game.main);
