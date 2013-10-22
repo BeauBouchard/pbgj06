@@ -1,8 +1,6 @@
 /*
  * Game Engine for Sprite Based HTML5 Canvas Game
  * Author: Beau Bouchard (@beaubouchard)
- * https://github.com/BeauBouchard/pbgj06/
- 
  */
  
 
@@ -25,6 +23,10 @@ function Game(){
 	this.player = new Player();
 	this.keyStroke = [];
 	this.then;
+	this.now = Date.now();;
+	this.delta;
+	this.fps = 0;
+	
 }
 Game.prototype = {
 	initialize: function() {
@@ -57,44 +59,45 @@ Game.prototype = {
 	//Game loop
 	main: 				function(){
 		
-		var now = Date.now();
-		var delta = now - this.then;
-	
-		game.update(delta / 1000);
+		this.now = Date.now();
+		this.fps = 
+		this.delta = this.now - this.then;
+		this.fps = 	game.update( 1000 / this.delta );
 		game.render();
 		
 		
-		this.then = now;
+		this.then = this.now;
 	},
 	update: 			function(incMod){
-	
+		//incMod = fps
 		game.handleInput(incMod);
 		
 		
 	},
 	render:				function(){
-	
+		//here we move shit, and render game
+		window.webkitRequestAnimationFrame(game.main);
 	},
 	//+------------------------------------------------+
 	//| 		INPUT 				   |
 	//+------------------------------------------------+
 	// Event listener for keystroke codes
-	handleInput:			function(incMod){
+	handleInput:		function(incMod){
 			
 			if ((38 in this.keyStroke )|| (87 in this.keyStroke)) {// up key stroke or 'w' key stroke
-				game.player.tryMove(game.player.getX() ,(game.player.getY() + (game.player.getSpeed() * incMod)));
+				game.player.tryMove(game.player.getX() ,(game.player.getY() + (game.player.getSpeed() )));
 				game.tick += incMod*5;
 			}
 			if ((40 in this.keyStroke) || (83 in this.keyStroke)) { // down key stroke or 's' key stroke
-				game.player.tryMove(game.player.getX() ,(game.player.getY() - (game.player.getSpeed() * incMod)));
+				game.player.tryMove(game.player.getX() ,(game.player.getY() - (game.player.getSpeed() )));
 				game.tick += incMod*5;
 			}
 			if ((37 in this.keyStroke) || (65 in this.keyStroke)){ // left key stroke or 'a' key stroke
-				game.player.tryMove((game.player.getX() + (game.player.getSpeed() * incMod)),game.player.getY());
+				game.player.tryMove((game.player.getX() + (game.player.getSpeed() )),game.player.getY());
 				game.tick += incMod*5;
 			}
 			if ((39 in this.keyStroke) || (68 in this.keyStroke)) { // right key stroke or 'd' key stroke
-				game.player.tryMove((game.player.getX() - (game.player.getSpeed() * incMod)),game.player.getY());
+				game.player.tryMove((game.player.getX() - (game.player.getSpeed() )),game.player.getY());
 				game.tick += incMod*5;
 			}
 			
@@ -115,7 +118,7 @@ function Map(){
 	this.context;
 }
 Map.prototype = {
-	initialize: 			function() {
+	initialize: function() {
 		messagelog("map.prototype initialize");
 		this.canvas 		= document.createElement("canvas");
 	 	this.context 		= this.canvas.getContext("2d");
@@ -125,10 +128,10 @@ Map.prototype = {
 		
 	 	document.getElementById("game").appendChild(this.canvas);
 	},
-	getCanvas: 			function() { 
+	getCanvas: function() { 
 		return this.canvas;
 	},
-	getContext: 			function() {
+	getContext: function() {
 		return this.context;
 	}
 
@@ -140,16 +143,16 @@ Map.prototype = {
 function Monster (){
 }
 Monster.prototype = {
-	initialize: 			function() {
+	initialize: function() {
 	
 	},
-	spawn: 				function(ix, iy) {
+	spawn: function(ix, iy) {
 		
 	},
-	render: 			function() {
+	render: function() {
 		
 	},
-	tryMove: 			function(dX, dY) {
+	tryMove: function(dX, dY) {
 		
 	}
  }
@@ -161,27 +164,29 @@ function Player(){
 	this.x;
 	this.y;
 	this.sprite;
-	this.speed = 256; //pixels per second
+	this.cells  = []; // entities track which cells they currently occupy
+	
+	this.speed = 5; //pixels per second
 }
 Player.prototype = {
-	initialize: 			function(context) {
+	initialize: function(context) {
 		messagelog("game.player.initialize");
 		this.sprite = new Sprite("box");
 		this.x = game.map.getCanvas().width / 2;
 		this.y = game.map.getCanvas().height / 2;
 		this.sprite.initialize(this.x,this.y);
 	},
-	loadSprite: 			function() {
+	loadSprite: 	function() {
 
 		
 	},
-	spawn: 				function(ix, iy) {
+	spawn: 			function(ix, iy) {
 		this.sprite.spawn(ix, iy);
 	},
 	render: 		function() {
 		
 	},
-	tryMove: 			function(iX, iY) {
+	tryMove: 		function(iX, iY) {
 		
 		//there will be some colition detection here later. "
 		messagelog(iX);
@@ -189,13 +194,13 @@ Player.prototype = {
 		this.y = iY;
 		this.sprite.draw(this.x, this.y);
 	},
-	getX: 				function(){
+	getX: 			function(){
 		return this.x;
 	},
-	getY: 				function(){
+	getY: 			function(){
 		return this.y;
 	},
-	getSpeed: 			function(){
+	getSpeed: 		function(){
 		return this.speed;
 	}
 }
@@ -208,10 +213,10 @@ function Entity(){
 	var x,y,size,passable = false;
 }
 Entity.prototype = {
-	initialize			function() {
+	initialize: function() {
 	
 	},
-	render: 			function() {
+	render: function() {
 		
 	}
 }
@@ -230,7 +235,7 @@ function Sprite(inctype){
 	
 }
 Sprite.prototype = {
-	initialize: 			function(iX, iY) {
+	initialize: 		function(iX, iY) {
 		messagelog("game.player.sprite.initialize : Type :" + this.spritetype);
 		this.context = game.map.getContext();
 		this.spawn(iX, iY);
@@ -254,7 +259,7 @@ Sprite.prototype = {
 				this.context.fillRect (10, 10, 55, 50);
 		}
 	},
-	preloadImages:			function() {
+	preloadImages:		function() {
 	
 	},
 	loadImage: 			function(){
@@ -311,7 +316,7 @@ function Menu(){
 }
 Menu.prototype = {
 	
-	initialize: 				function(incMenuNum) {
+	initialize: 		function(incMenuNum) {
 		//assign which menu to bring up.
 		this.menuList = menuArray[incMenuNum];
 		//loop through menu
@@ -321,7 +326,7 @@ Menu.prototype = {
 			this.loadMenu[menuItem];
 		}
 	},
-	loadMenu : 				function(incMenuItem) {
+	loadMenu : 		function(incMenuItem) {
 		//incMenuItem is a string
 		if(incMenuItem.indexOf(":")>0){
 			//sub menu detected
@@ -330,7 +335,7 @@ Menu.prototype = {
 			//When a menu item has a submenu
 			//add a onMouseOver event to bring up submenu
 		
-			addEventListener("onclick", function (e) {
+			addEventListener("mouseover", function (e) {
 				menu.loadMenu(menu);
 				this.subMenuOpen = true;
 			}, false);
@@ -345,13 +350,9 @@ Menu.prototype = {
 		//for each this.menuList
 		//display(this.menuList[x]);
 	},
-	unloadMenu:				function() {
+	unloadMenu:		function() {
 		//code to unload menu
 		// remember to delete self when done, as object is no longer needed.removeChild()
-	},
-	buildMenu:				function() {
-		
-	
 	}
 	
 }
@@ -370,7 +371,9 @@ game.initialize();
 		addEventListener("keyup", function (e) {
 				delete game.keyStroke[e.keyCode];
 			}, false);
-setInterval(function(){game.main()},1);
+			
+//setInterval(function(){game.main()},1);
+window.webkitRequestAnimationFrame(game.main);
 
 	
 	
